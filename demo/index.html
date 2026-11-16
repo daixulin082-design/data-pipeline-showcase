@@ -3,12 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>数据采集 demo · 结构化查询</title>
+<title>商户名录采集 Demo · 数据采集与清洗</title>
 <style>
-:root{
-  --bg:#f7f7f5; --panel:#ffffff; --line:#e5e4e0; --line2:#d5d4cf;
-  --ink:#1a1a18; --ink2:#4a4a46; --muted:#8a8a84; --accent:#2f6f4e; --accent2:#e8f0eb;
-}
+:root{--bg:#f7f7f5;--panel:#fff;--line:#e5e4e0;--line2:#d5d4cf;--ink:#1a1a18;--ink2:#4a4a46;
+  --muted:#8a8a84;--accent:#2f6f4e;--accent2:#e8f0eb}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);
   font:14px/1.7 Inter,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
@@ -25,16 +23,15 @@ select:focus,input:focus{border-color:var(--accent)}
 input[type=text]{flex:1 1 240px;min-width:180px}
 .btn{padding:7px 14px;border:1px solid var(--line2);border-radius:5px;background:#fff;cursor:pointer;color:var(--ink2)}
 .btn:hover{border-color:var(--accent);color:var(--accent)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
 .stat{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--muted);margin-left:auto}
 table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
 th{text-align:left;padding:11px 14px;font-size:11.5px;font-weight:600;color:var(--muted);
   text-transform:uppercase;letter-spacing:.05em;background:#fbfbfa;border-bottom:1px solid var(--line)}
-td{padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px;color:var(--ink2);vertical-align:middle}
+td{padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px;color:var(--ink2)}
 tr:last-child td{border-bottom:0}
 tr:hover td{background:#fbfbfa}
 td.num{font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
-td.title{color:var(--ink);max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td.name{color:var(--ink);max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tag{display:inline-block;padding:1px 7px;border-radius:3px;font-size:11px;
   font-family:ui-monospace,monospace;background:var(--accent2);color:var(--accent)}
 .mask{color:var(--muted);font-family:ui-monospace,monospace;font-size:12px}
@@ -42,72 +39,83 @@ td.title{color:var(--ink);max-width:320px;overflow:hidden;text-overflow:ellipsis
 footer{margin-top:24px;padding:16px 0;border-top:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.9}
 footer a{color:var(--accent)}
 .badge{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:3px;font-size:11px;
-  background:#fff4e5;color:#a86a1f;border:1px solid #f0dcc0}
+  background:#eef4f0;color:var(--accent);border:1px solid #cfe2d8}
 @media(max-width:760px){
   header,main{padding-left:16px;padding-right:16px}
-  th:nth-child(4),td:nth-child(4),th:nth-child(7),td:nth-child(7){display:none}
+  th:nth-child(4),td:nth-child(4),th:nth-child(8),td:nth-child(8){display:none}
 }
 </style>
 </head>
 <body>
 <header>
-  <h1>数据采集 · 结构化查询 demo</h1>
-  <div class="sub">演示数据为虚构样例 · 实际交付为 Excel/CSV + 采集源码 · <b>支持按需定制字段</b><span class="badge">技术演示</span></div>
+  <h1>商户名录采集 Demo</h1>
+  <div class="sub">演示数据为程序生成的虚构样例 · 实际交付为 Excel/CSV + 可复跑的采集源码 · <b>字段按需定制</b><span class="badge">技术演示</span></div>
 </header>
 <main>
   <div class="filters">
     <select id="fCity"><option value="">全部城市</option></select>
     <select id="fArea"><option value="">全部区域</option></select>
+    <select id="fCat">
+      <option value="">全部品类</option>
+      <option value="餐饮">餐饮</option>
+      <option value="咖啡">咖啡</option>
+      <option value="美容">美容</option>
+      <option value="健身">健身</option>
+      <option value="维修">维修</option>
+      <option value="家政">家政</option>
+    </select>
     <select id="fPrice">
-      <option value="">全部价格</option>
-      <option value="0-500">500 以下</option>
-      <option value="500-700">500–700</option>
-      <option value="700-1000">700–1000</option>
-      <option value="1000-99999">1000 以上</option>
+      <option value="">全部客单价</option>
+      <option value="0-80">80 以下</option>
+      <option value="80-150">80–150</option>
+      <option value="150-300">150–300</option>
+      <option value="300-99999">300 以上</option>
     </select>
-    <select id="fAge">
-      <option value="">全部年龄</option>
-      <option value="18-20">18–20</option>
-      <option value="20-25">20–25</option>
-      <option value="25-30">25–30</option>
-      <option value="30-40">30–40</option>
-    </select>
-    <input type="text" id="q" placeholder="搜索标题 / 区域 / 备注…">
+    <input type="text" id="q" placeholder="搜索名称 / 商圈 / 标签…">
     <button class="btn" id="reset">重置</button>
     <span class="stat" id="stat"></span>
   </div>
   <table>
     <thead><tr>
-      <th>ID</th><th>日期</th><th>城市</th><th>区域</th><th>标题</th>
-      <th>价格</th><th>年龄</th><th>联系方式</th>
+      <th>ID</th><th>采集时间</th><th>城市</th><th>区域</th><th>商户名称</th>
+      <th>品类</th><th>客单价</th><th>评分</th><th>联系方式</th>
     </tr></thead>
     <tbody id="tbody"></tbody>
   </table>
   <div class="empty" id="empty" style="display:none">没有匹配的记录</div>
 
   <footer>
-    这是「数据采集 + 清洗 + 交付」流水线的前端演示。<br>
-    实际交付包含：结构化数据文件（Excel/CSV/JSON）+ 可复跑的 Python 源码 + 使用说明。<br>
-    数据为虚构样例，用于展示字段结构与筛选能力 · <a href="https://github.com/">GitHub 源码</a>
+    这是「网页采集 → 数据清洗 → 结构化交付」流水线的前端演示。<br>
+    实际交付包含：结构化数据文件（Excel / CSV / JSON）+ 可复跑的 Python 采集源码 + 使用说明。<br>
+    全部数据为程序生成的虚构样例，仅用于展示字段结构与筛选能力 · <a href="/quote.html">报价计算器</a>
   </footer>
 </main>
 
 <script>
-/* ===== 虚构样例数据（200 条，程序生成） ===== */
+/* ===== 虚构样例：本地生活商户名录 ===== */
 var CITIES = {
-  "杭州": ["上城区","拱墅区","西湖区","滨江区","萧山区","余杭区","临平区"],
-  "南京": ["玄武区","秦淮区","建邺区","鼓楼区","江宁区","浦口区","栖霞区"],
-  "苏州": ["姑苏区","吴中区","相城区","工业园区","高新区","吴江区"],
-  "上海": ["黄浦区","徐汇区","静安区","普陀区","浦东新区","闵行区","杨浦区"],
+  "杭州": ["上城区","拱墅区","西湖区","滨江区","萧山区","余杭区"],
+  "南京": ["玄武区","秦淮区","建邺区","鼓楼区","江宁区","浦口区"],
+  "苏州": ["姑苏区","吴中区","相城区","工业园区","高新区"],
+  "上海": ["黄浦区","徐汇区","静安区","普陀区","浦东新区","闵行区"],
   "无锡": ["梁溪区","滨湖区","新吴区","惠山区"],
   "常州": ["天宁区","钟楼区","新北区","武进区"]
 };
-var TITLES = ["个人 · 近地铁","独居 · 可外出","老小区 · 环境安静","商圈附近 · 交通便利",
-  "新装修 · 干净","高层 · 视野好","临江 · 停车方便","大学城附近","地铁口步行 5 分钟","小区内部 · 私密"];
-var NOTES = ["个人发布","已验证联系方式","近期更新","暂无评价","老客户推荐","首次发布"];
+var CATS = ["餐饮","咖啡","美容","健身","维修","家政"];
+var BRANDS = ["禾","拾","原","朴","一","南","青","和","初","小"];
+var SUFFIX = {
+  "餐饮": ["家常菜馆","面馆","烧烤店","私房菜","小酒馆"],
+  "咖啡": ["咖啡工作室","手冲咖啡馆","烘焙坊","茶饮店"],
+  "美容": ["美容工作室","皮肤管理中心","美甲店","造型工作室"],
+  "健身": ["健身工作室","私教馆","瑜伽馆","搏击俱乐部"],
+  "维修": ["汽车维修店","家电维修点","手机维修店","开锁服务"],
+  "家政": ["家政服务部","保洁工作室","月嫂服务","搬家服务"]
+};
+var AREAS_TAG = ["近地铁","临街店铺","商场内","写字楼底商","社区商铺","老字号"];
+var NOTE = ["已核验","连锁门店","个体经营","新开业","高评分","暂无评价"];
 
 function pad(n){return n<10?"0"+n:n}
-function maskCommon(s){return s.slice(0,4) + "****" + s.slice(-2)}
+function masked(s){return s.slice(0,3) + "****" + s.slice(-2)}
 
 var DATA = (function(){
   var out = [], seed = 20261116;
@@ -117,26 +125,27 @@ var DATA = (function(){
     var c = cities[Math.floor(rnd()*cities.length)];
     var areas = CITIES[c];
     var a = areas[Math.floor(rnd()*areas.length)];
+    var cat = CATS[Math.floor(rnd()*CATS.length)];
+    var name = BRANDS[Math.floor(rnd()*BRANDS.length)]
+             + (SUFFIX[cat][Math.floor(rnd()*SUFFIX[cat].length)]);
+    var price = [45,68,88,120,168,220,280,380][Math.floor(rnd()*8)];
+    var score = (3.5 + rnd()*1.5).toFixed(1);
     var m = Math.floor(rnd()*10)+1, d = Math.floor(rnd()*28)+1;
-    var price = [400,500,550,600,650,700,800,900,1000][Math.floor(rnd()*9)];
-    var age = ["18-20","20-25","25-30","30-40"][Math.floor(rnd()*4)];
-    var qq = String(Math.floor(1000000000+rnd()*8999999999));
-    var tel = "1" + [3,5,7,8,9][Math.floor(rnd()*5)] + String(Math.floor(100000000+rnd()*899999999));
+    var tel = "0" + String(Math.floor(10+rnd()*89)) + "-" + String(Math.floor(1000000+rnd()*8999999));
+    var mob = "1" + [3,5,7,8,9][Math.floor(rnd()*5)] + String(Math.floor(100000000+rnd()*899999999));
     out.push({
-      id: "S" + pad(i+1),
-      date: "2026-11-" + pad(m) + " " + (d<10?"0"+d:d),
-      city: c, area: a,
-      title: TITLES[Math.floor(rnd()*TITLES.length)],
-      price: price, age: age,
-      qq: qq, tel: tel,
-      note: NOTES[Math.floor(rnd()*NOTES.length)]
+      id: "M" + pad(i+1),
+      date: "2026-11-" + pad(m) + " " + pad(d),
+      city: c, area: a, cat: cat, name: name,
+      price: price, score: score, tel: tel, mob: mob,
+      tag: AREAS_TAG[Math.floor(rnd()*AREAS_TAG.length)],
+      note: NOTE[Math.floor(rnd()*NOTE.length)]
     });
   }
   return out;
 })();
 
-/* ===== 筛选 ===== */
-var F = { city:"", area:"", price:"", age:"", q:"" };
+var F = { city:"", area:"", cat:"", price:"", q:"" };
 
 function inRange(v, r){
   var p = r.split("-").map(Number);
@@ -146,10 +155,10 @@ function inRange(v, r){
 function match(r){
   if (F.city && r.city !== F.city) return false;
   if (F.area && r.area !== F.area) return false;
+  if (F.cat && r.cat !== F.cat) return false;
   if (F.price && !inRange(r.price, F.price)) return false;
-  if (F.age && r.age !== F.age) return false;
   if (F.q){
-    var blob = (r.title + r.area + r.city + r.note).toLowerCase();
+    var blob = (r.name + r.area + r.city + r.tag + r.note).toLowerCase();
     if (blob.indexOf(F.q.toLowerCase()) < 0) return false;
   }
   return true;
@@ -157,24 +166,23 @@ function match(r){
 
 function render(){
   var rows = DATA.filter(match);
-  var tb = document.getElementById("tbody");
-  tb.innerHTML = rows.slice(0,200).map(function(r){
+  document.getElementById("tbody").innerHTML = rows.map(function(r){
     return "<tr>" +
       "<td class='num'>" + r.id + "</td>" +
       "<td class='num'>" + r.date + "</td>" +
       "<td>" + r.city + "</td>" +
       "<td>" + r.area + "</td>" +
-      "<td class='title'>" + r.title + " <span class='tag'>" + r.note + "</span></td>" +
-      "<td class='num'>" + r.price + "</td>" +
-      "<td class='num'>" + r.age + "</td>" +
-      "<td class='mask'>QQ " + maskCommon(r.qq) + " · " + maskCommon(r.tel) + "</td>" +
+      "<td class='name'>" + r.name + " <span class='tag'>" + r.tag + "</span></td>" +
+      "<td>" + r.cat + "</td>" +
+      "<td class='num'>¥" + r.price + "</td>" +
+      "<td class='num'>" + r.score + "</td>" +
+      "<td class='mask'>" + masked(r.tel) + " · " + masked(r.mob) + "</td>" +
     "</tr>";
   }).join("");
   document.getElementById("empty").style.display = rows.length ? "none" : "block";
   document.getElementById("stat").textContent = rows.length + " / " + DATA.length + " 条";
 }
 
-/* ===== 初始化 ===== */
 (function init(){
   var fc = document.getElementById("fCity");
   Object.keys(CITIES).forEach(function(c){
@@ -193,19 +201,18 @@ function render(){
     render();
   };
   document.getElementById("fArea").onchange = function(){ F.area = this.value; render(); };
+  document.getElementById("fCat").onchange = function(){ F.cat = this.value; render(); };
   document.getElementById("fPrice").onchange = function(){ F.price = this.value; render(); };
-  document.getElementById("fAge").onchange = function(){ F.age = this.value; render(); };
   document.getElementById("q").oninput = function(){ F.q = this.value.trim(); render(); };
   document.getElementById("reset").onclick = function(){
-    F = { city:"", area:"", price:"", age:"", q:"" };
+    F = { city:"", area:"", cat:"", price:"", q:"" };
     document.getElementById("fCity").value = "";
     document.getElementById("fArea").innerHTML = '<option value="">全部区域</option>';
+    document.getElementById("fCat").value = "";
     document.getElementById("fPrice").value = "";
-    document.getElementById("fAge").value = "";
     document.getElementById("q").value = "";
     render();
   };
-
   render();
 })();
 </script>

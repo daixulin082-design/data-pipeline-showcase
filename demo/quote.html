@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>采集项目报价计算器</title>
+<style>
+:root{--bg:#f7f7f5;--panel:#fff;--line:#e5e4e0;--line2:#d5d4cf;--ink:#1a1a18;--ink2:#4a4a46;
+  --muted:#8a8a84;--accent:#2f6f4e;--accent2:#e8f0eb;--warn:#a86a1f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:14px/1.7 Inter,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+header{padding:28px 32px 20px;background:var(--panel);border-bottom:1px solid var(--line)}
+h1{margin:0 0 6px;font-size:20px;font-weight:600}
+.sub{color:var(--muted);font-size:12.5px}
+main{max-width:1000px;margin:0 auto;padding:24px 32px 60px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}main,header{padding-left:16px;padding-right:16px}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px 22px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.row:last-of-type{border-bottom:0}
+.row label{font-size:13px;color:var(--ink2)}
+select{font:inherit;font-size:13px;padding:6px 9px;border:1px solid var(--line2);border-radius:5px;
+  background:#fff;outline:none;min-width:150px}
+select:focus{border-color:var(--accent)}
+h2{font-size:14px;font-weight:600;margin:0 0 14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.price{font-family:ui-monospace,Consolas,monospace;font-size:32px;font-weight:600;color:var(--accent);margin:6px 0}
+.price small{font-size:14px;color:var(--muted);font-weight:400;margin-left:4px}
+.breakdown{font-size:12.5px;color:var(--ink2);font-family:ui-monospace,Consolas,monospace;line-height:2.1}
+.breakdown .k{color:var(--muted);display:inline-block;min-width:110px}
+.note{margin-top:14px;padding:10px 12px;background:#fff8ec;border:1px solid #f0e0c8;
+  border-radius:6px;font-size:12px;color:var(--warn);line-height:1.7}
+.hint{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.8}
+.expr{font-family:ui-monospace,monospace;font-size:11.5px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>采集项目报价计算器</h1>
+  <div class="sub">按站点特征估算工作量与报价 · 内部工具，供接单时快速定价</div>
+</header>
+<main>
+<div class="grid">
+  <div class="panel">
+    <h2>项目参数</h2>
+    <div class="row">
+      <label>数据来源</label>
+      <select id="src">
+        <option value="1.0">有现成 JSON 接口</option>
+        <option value="1.4">有接口但要处理鉴权</option>
+        <option value="1.6">无接口，需解析 HTML</option>
+        <option value="2.2">需逆向加密参数</option>
+        <option value="2.6">需登录态（客户提供账号）</option>
+      </select>
+    </div>
+    <div class="row">
+      <label>站点数量</label>
+      <select id="sites">
+        <option value="1">1 个</option>
+        <option value="1.8">2–3 个</option>
+        <option value="2.6">4–6 个</option>
+        <option value="3.5">6 个以上</option>
+      </select>
+    </div>
+    <div class="row">
+      <label>数据量</label>
+      <select id="volume">
+        <option value="1.0">1,000 条以内</option>
+        <option value="1.3">1,000–10,000 条</option>
+        <option value="1.7">1 万–10 万条</option>
+        <option value="2.4">10 万条以上</option>
+      </select>
+    </div>
+    <div class="row">
+      <label>清洗要求</label>
+      <select id="clean">
+        <option value="1.0">无需清洗</option>
+        <option value="1.3">基础（去重+格式统一）</option>
+        <option value="1.6">中等（+广告过滤+字段抽取）</option>
+        <option value="2.0">复杂（+多源合并+实体对齐）</option>
+      </select>
+    </div>
+    <div class="row">
+      <label>交付形态</label>
+      <select id="deliver">
+        <option value="1.0">Excel / CSV</option>
+        <option value="1.3">+ 定时更新脚本</option>
+        <option value="1.8">+ 数据展示站</option>
+        <option value="2.2">+ REST API</option>
+      </select>
+    </div>
+    <div class="row">
+      <label>紧急程度</label>
+      <select id="urgent">
+        <option value="1.0">正常排期</option>
+        <option value="1.3">加急（缩短 30%）</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>报价结果</h2>
+    <div class="price" id="price">— <small>元</small></div>
+    <div class="breakdown" id="breakdown"></div>
+    <div class="hint" id="hint"></div>
+    <div class="note" id="note"></div>
+    <div class="expr" id="expr"></div>
+  </div>
+</div>
+
+<div class="panel" style="margin-top:24px">
+  <h2>报价原则</h2>
+  <div class="breakdown">
+    <div><span class="k">基准价</span>800 元（1 站点 / 千条以内 / 有接口 / 无清洗）</div>
+    <div><span class="k">倍数叠加</span>各维度系数相乘，再乘以基准价</div>
+    <div><span class="k">最低价</span>300 元（低于此不接，时间成本不划算）</div>
+    <div><span class="k">定金</span>50%，交付后付尾款</div>
+    <div><span class="k">样本</span>先做 100 条验收，不达标不收费</div>
+    <div><span class="k">改版</span>一年内免费修一次</div>
+  </div>
+</div>
+
+<div class="panel" style="margin-top:24px">
+  <h2>不能接的情况</h2>
+  <div class="breakdown">
+    <div>· 破解读取他人账号 / 付费墙</div>
+    <div>· 采集个人隐私数据（身份证、病历、行踪）</div>
+    <div>· 客户要求「先做完再付钱」</div>
+    <div>· 报价低于 300 元</div>
+  </div>
+</div>
+</main>
+
+<script>
+var BASE = 800, MIN = 300;
+
+function calc(){
+  var a = parseFloat(document.getElementById("src").value);
+  var b = parseFloat(document.getElementById("sites").value);
+  var c = parseFloat(document.getElementById("volume").value);
+  var d = parseFloat(document.getElementById("clean").value);
+  var e = parseFloat(document.getElementById("deliver").value);
+  var f = parseFloat(document.getElementById("urgent").value);
+
+  var raw = BASE * a * b * c * d * e * f;
+  var price = Math.max(MIN, Math.round(raw / 100) * 100);
+
+  // 区间：基准 ±25%
+  var lo = Math.max(MIN, Math.round(price * 0.8 / 100) * 100);
+  var hi = Math.round(price * 1.25 / 100) * 100;
+
+  document.getElementById("price").innerHTML =
+    lo.toLocaleString() + " – " + hi.toLocaleString() + " <small>元</small>";
+
+  // 工期估算
+  var days = Math.max(1, Math.round(2 * a * b * c * d * 0.7));
+  // 采集耗时（按 0.75s/条 估算，并行 6 线程）
+  var rows = document.getElementById("volume").selectedIndex;
+  var est = [1000, 10000, 100000, 300000][rows];
+  var hours = Math.round(est * 0.75 / 6 / 60 * 10) / 10;
+
+  document.getElementById("breakdown").innerHTML =
+    '<div><span class="k">基准价</span>' + BASE + ' 元</div>' +
+    '<div><span class="k">来源系数</span>× ' + a.toFixed(1) + '</div>' +
+    '<div><span class="k">站点系数</span>× ' + b.toFixed(1) + '</div>' +
+    '<div><span class="k">数据量</span>× ' + c.toFixed(1) + '</div>' +
+    '<div><span class="k">清洗</span>× ' + d.toFixed(1) + '</div>' +
+    '<div><span class="k">交付</span>× ' + e.toFixed(1) + '</div>' +
+    '<div><span class="k">紧急</span>× ' + f.toFixed(1) + '</div>' +
+    '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line)">' +
+      '<span class="k">工期</span>约 ' + days + ' 天' +
+      '<span class="k" style="margin-left:16px">采集耗时</span>约 ' + hours + ' 小时</div>';
+
+  document.getElementById("expr").textContent =
+    BASE + " × " + a + " × " + b + " × " + c + " × " + d + " × " + e + " × " + f +
+    " = " + Math.round(raw) + " 元";
+
+  var hint = [];
+  if (a >= 2.2) hint.push("需要逆向加密参数，建议先做 1 个接口的复现验证再报价。");
+  if (b >= 2.6) hint.push("多站点项目建议分阶段交付，每 2 个站点验收一次。");
+  if (c >= 1.7) hint.push("数据量大，建议加定时增量更新（+500/月）。");
+  if (e >= 1.8) hint.push("含展示站/API，需额外确认字段和交互需求。");
+  document.getElementById("hint").innerHTML = hint.length
+    ? "💡 " + hint.join("<br>💡 ") : "💡 参数简单，可以直接报价。";
+
+  var note = [];
+  if (a >= 2.6) note = "⚠ 需登录态的项目，必须由客户提供账号，且仅采集其有权访问的数据。";
+  else if (price >= 5000) note = "⚠ 金额较大，建议签简单合同，明确交付物与验收标准。";
+  else note = "✓ 标准项目，报 50% 定金 + 交付样本验收即可。";
+  document.getElementById("note").textContent = note;
+}
+
+["src","sites","volume","clean","deliver","urgent"].forEach(function(id){
+  document.getElementById(id).onchange = calc;
+});
+
+calc();
+</script>
+</body>
+</html>
