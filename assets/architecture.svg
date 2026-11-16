@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620">
+<rect width="1200" height="620" fill="#0f1114"/>
+<style>text{font-family:Inter,PingFang SC,Microsoft YaHei,sans-serif}</style>
+<defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#7f8791"/></marker></defs>
+<text x="40" y="40" fill="#e9e7e4" font-size="19" font-weight="700">数据采集 · 清洗 · 交付 流水线</text>
+<text x="40" y="62" fill="#7f8791" font-size="12">data-pipeline-showcase</text>
+<text x="40" y="105" fill="#4ade80" font-size="12" font-family="monospace">01 / 采集层</text>
+<rect x="40" y="118" width="150" height="70" rx="8" fill="#15181d" stroke="#242a31"/>
+<text x="115.0" y="146" fill="#e9e7e4" font-size="15" font-weight="600" text-anchor="middle">目标站点</text>
+<text x="115.0" y="168" fill="#7f8791" font-size="11.5" text-anchor="middle">HTML / JSON</text>
+<rect x="240" y="118" width="150" height="70" rx="8" fill="#15181d" stroke="#60a5fa"/>
+<text x="315.0" y="146" fill="#e9e7e4" font-size="15" font-weight="600" text-anchor="middle">抓包分析</text>
+<text x="315.0" y="168" fill="#7f8791" font-size="11.5" text-anchor="middle">F12 Network</text>
+<rect x="440" y="118" width="150" height="70" rx="8" fill="#15181d" stroke="#60a5fa"/>
+<text x="515.0" y="146" fill="#e9e7e4" font-size="15" font-weight="600" text-anchor="middle">接口优先</text>
+<text x="515.0" y="168" fill="#7f8791" font-size="11.5" text-anchor="middle">JSON 稳定 10x</text>
+<rect x="640" y="118" width="150" height="70" rx="8" fill="#15181d" stroke="#e2a860"/>
+<text x="715.0" y="146" fill="#e9e7e4" font-size="15" font-weight="600" text-anchor="middle">限流退避</text>
+<text x="715.0" y="168" fill="#7f8791" font-size="11.5" text-anchor="middle">429 → backoff</text>
+<rect x="840" y="118" width="150" height="70" rx="8" fill="#15181d" stroke="#242a31"/>
+<text x="915.0" y="146" fill="#e9e7e4" font-size="15" font-weight="600" text-anchor="middle">断点续传</text>
+<text x="915.0" y="168" fill="#7f8791" font-size="11.5" text-anchor="middle">ID 落盘</text>
+<line x1="190" y1="153" x2="240" y2="153" stroke="#7f8791" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="390" y1="153" x2="440" y2="153" stroke="#7f8791" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="590" y1="153" x2="640" y2="153" stroke="#7f8791" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="790" y1="153" x2="840" y2="153" stroke="#7f8791" stroke-width="1.5" marker-end="url(#ar)"/>
+<text x="40" y="245" fill="#4ade80" font-size="12" font-family="monospace">02 / 清洗层</text>
+<rect x="40" y="258" width="200" height="80" rx="8" fill="#15181d" stroke="#60a5fa"/>
+<text x="140.0" y="286" fill="#e9e7e4" font-size="15" font-weight="600" text-anchor="middle">业务指纹去重</text>
+<text x="140.0" y="308" fill="#7f8791" font-size="11.5" text-anchor="middle">contact + city 组合</text>
+<rect x="280" y="258" width="200" height="80" rx="8" fill="#15181d" stroke="#e2a860"/>
+<text x="380.0" y="286" fill="#e9e7e4" font-size="15" font-weight="600" text-anchor="middle">广告加权过滤</text>
+<text x="380.0" y="308" fill="#7f8791" font-size="11.5" text-anchor="middle">强 +3 / 弱 +1 / ≥4 删</text>
+<rect x="520" y="258" width="200" height="80" rx="8" fill="#15181d" stroke="#60a5fa"/>
+<text x="620.0" y="286" fill="#e9e7e4" font-size="15" font-weight="600" text-anchor="middle">字段抽取</text>
+<text x="620.0" y="308" fill="#7f8791" font-size="11.5" text-anchor="middle">20+ 条正则规则</text>
+<rect x="760" y="258" width="200" height="80" rx="8" fill="#15181d" stroke="#242a31"/>
+<text x="860.0" y="286" fill="#e9e7e4" font-size="15" font-weight="600" text-anchor="middle">异常值剔除</text>
+<text x="860.0" y="308" fill="#7f8791" font-size="11.5" text-anchor="middle">价格区间校验</text>
+<line x1="240" y1="298" x2="280" y2="298" stroke="#7f8791" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="480" y1="298" x2="520" y2="298" stroke="#7f8791" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="720" y1="298" x2="760" y2="298" stroke="#7f8791" stroke-width="1.5" marker-end="url(#ar)"/>
+<text x="40" y="395" fill="#4ade80" font-size="12" font-family="monospace">03 / 交付层</text>
+<rect x="40" y="408" width="260" height="80" rx="8" fill="#15181d" stroke="#242a31"/>
+<text x="170.0" y="436" fill="#e9e7e4" font-size="15" font-weight="600" text-anchor="middle">Excel / CSV</text>
+<text x="170.0" y="458" fill="#7f8791" font-size="11.5" text-anchor="middle">UTF-8-BOM 防乱码</text>
+<rect x="340" y="408" width="260" height="80" rx="8" fill="#15181d" stroke="#4ade80"/>
+<text x="470.0" y="436" fill="#e9e7e4" font-size="15" font-weight="600" text-anchor="middle">静态数据站</text>
+<text x="470.0" y="458" fill="#7f8791" font-size="11.5" text-anchor="middle">分片 + gzip + CDN</text>
+<rect x="640" y="408" width="260" height="80" rx="8" fill="#15181d" stroke="#242a31"/>
+<text x="770.0" y="436" fill="#e9e7e4" font-size="15" font-weight="600" text-anchor="middle">REST API</text>
+<text x="770.0" y="458" fill="#7f8791" font-size="11.5" text-anchor="middle">FastAPI + 缓存</text>
+<line x1="915" y1="188" x2="915" y2="240" stroke="#7f8791" stroke-width="1.5" stroke-dasharray="4 4"/>
+<line x1="915" y1="240" x2="170" y2="240" stroke="#7f8791" stroke-width="1.5" stroke-dasharray="4 4"/>
+<line x1="170" y1="240" x2="170" y2="258" stroke="#7f8791" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="860" y1="338" x2="860" y2="380" stroke="#7f8791" stroke-width="1.5" stroke-dasharray="4 4"/>
+<line x1="860" y1="380" x2="170" y2="380" stroke="#7f8791" stroke-width="1.5" stroke-dasharray="4 4"/>
+<line x1="170" y1="380" x2="170" y2="408" stroke="#7f8791" stroke-width="1.5" marker-end="url(#ar)"/>
+<text x="40" y="540" fill="#7f8791" font-size="12">关键指标</text>
+<rect x="40" y="552" width="270" height="46" rx="6" fill="#15181d" stroke="#242a31"/>
+<text x="56" y="572" fill="#7f8791" font-size="11">采集成功率</text>
+<text x="56" y="589" fill="#4ade80" font-size="14" font-family="monospace" font-weight="600">15% → 96%</text>
+<rect x="330" y="552" width="270" height="46" rx="6" fill="#15181d" stroke="#242a31"/>
+<text x="346" y="572" fill="#7f8791" font-size="11">脏数据率</text>
+<text x="346" y="589" fill="#4ade80" font-size="14" font-family="monospace" font-weight="600">35% → 5%</text>
+<rect x="620" y="552" width="270" height="46" rx="6" fill="#15181d" stroke="#242a31"/>
+<text x="636" y="572" fill="#7f8791" font-size="11">去重准确率</text>
+<text x="636" y="589" fill="#4ade80" font-size="14" font-family="monospace" font-weight="600">68% → 99%</text>
+<rect x="910" y="552" width="270" height="46" rx="6" fill="#15181d" stroke="#242a31"/>
+<text x="926" y="572" fill="#7f8791" font-size="11">首屏体积</text>
+<text x="926" y="589" fill="#4ade80" font-size="14" font-family="monospace" font-weight="600">8.2MB → 1.2MB</text>
+</svg>
