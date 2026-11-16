@@ -130,8 +130,8 @@ data-pipeline-showcase/
 
 ## 八、联系方式
 
-- 微信：`<你的微信>`
-- 邮箱：`<你的邮箱>`
-- 闲鱼：`<闲鱼昵称>`
+- 微信 / 电话：`15317124739`
+- 邮箱：`daixulin082@gmail.com`
+- 在线 Demo：https://data-pipeline-demo.pages.dev/
 
 > 首次合作可先做 100 条样本验收，确认质量后再继续。
